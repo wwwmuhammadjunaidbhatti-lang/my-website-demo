@@ -13,15 +13,13 @@
   <p id="message">Loading configuration...</p>
 
   <script>
-    fetch("./config.xml")
+    fetch("https://raw.githubusercontent.com/wwwmuhammadjunaidbhatti-lang/my-website-demo/refs/heads/main/config.xml")
       .then(response => {
         if (!response.ok) throw new Error("XML file not found");
         return response.text();
       })
       .then(data => {
-        const xml = new DOMParser().parseFromString(
-          data, "application/xml"
-        );
+        const xml = new DOMParser().parseFromString(data, "application/xml");
 
         if (xml.querySelector("parsererror")) {
           throw new Error("Invalid XML");
@@ -31,9 +29,10 @@
         document.getElementById("message").textContent =
           title ? title.textContent : "Configuration loaded.";
       })
-      .catch(() => {
+      .catch(error => {
         document.getElementById("message").textContent =
-          "Please check config.xml";
+          "Configuration could not be loaded.";
+        console.error(error);
       });
   </script>
 </body>
