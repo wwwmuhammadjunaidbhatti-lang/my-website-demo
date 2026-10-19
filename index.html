@@ -3,50 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome</title>
+  <title id="pageTitle">Loading...</title>
+  <!-- Google Indexing & SEO Meta Tags -->
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="Click here to access your requested content safely and securely.">
 </head>
 <body style="font-family: Arial, sans-serif; max-width: 550px; margin: 40px auto; padding: 0 15px; text-align: center; background-color: #fafafa;">
 
-  <!-- 0. NORMAL HOME VIEW (Jab koi bina ?xml= ya ?admin=1 ke main website kholega) -->
+  <!-- HOME VIEW (Bina ?xml= ke) -->
   <div id="homeView" style="display: none; background: white; padding: 40px 25px; border: 1px solid #e0e0e0; border-radius: 12px;">
     <h2 style="margin-top: 0; color: #333;">Welcome to My Website</h2>
-    <p style="color: #666; font-size: 15px;">Please use a valid link to continue to your destination.</p>
+    <p style="color: #666; font-size: 15px;">Please use a valid link to continue.</p>
   </div>
 
-  <!-- 1. VISITOR VIEW (Jab koi ?xml= wala link kholega) -->
+  <!-- VISITOR VIEW (Agar redirect mein thori dair karni ho ya fallback ke liye) -->
   <div id="visitorView" style="display: none; background: white; padding: 35px 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
-    <h1 id="visitorTitle" style="margin-top: 0; color: #222; font-size: 26px;">Welcome</h1>
-    <p id="visitorSubtext" style="color: #555; margin-bottom: 25px; font-size: 16px;">
-      Click the button below to continue to your destination.
+    <h1 id="visitorTitle" style="margin-top: 0; color: #222; font-size: 26px;">Redirecting...</h1>
+    <p style="color: #555; margin-bottom: 25px; font-size: 16px;">
+      If you are not redirected automatically, click the button below:
     </p>
-    <a id="visitBtn" href="#" rel="noreferrer" style="display: inline-block; padding: 13px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
-      Continue to Website →
+    <a id="visitBtn" href="#" style="display: inline-block; padding: 13px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+      Continue Now →
     </a>
   </div>
 
   <!-- ERROR MESSAGE -->
   <p id="errorBox" style="display: none; color: #d9534f; background: #fdf2f2; padding: 15px; border-radius: 8px; font-weight: bold;"></p>
 
-  <!-- 2. SECRET ADMIN GENERATOR VIEW (Sirf ?admin=1 par khulega) -->
+  <!-- ADMIN GENERATOR VIEW (?admin=1) -->
   <div id="generatorView" style="display: none; text-align: left; background: white; padding: 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-    <h2 style="margin-top: 0; color: #222;">🔒 Secret Link Generator</h2>
-    <p style="color: #555; font-size: 14px;">Apna Title aur Destination Link neeche likhein:</p>
+    <h2 style="margin-top: 0; color: #222;">🔒 SEO Link Generator</h2>
+    <p style="color: #555; font-size: 14px;">Apna Title aur Destination Link likhein:</p>
 
-    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">1. Page Title:</label>
-    <input type="text" id="titleInput" value="Please Wait..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">1. Page Title (Google Search Title):</label>
+    <input type="text" id="titleInput" value="Watch Now - Full Video HD" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
 
     <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">2. Destination URL (Link):</label>
     <input type="url" id="destInput" value="https://www.wikipedia.org/" placeholder="https://..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
 
-    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">3. Redirect Style:</label>
-    <select id="redirectMode" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background: white;">
-      <option value="instant">⚡ Instant Redirect (Bina ruke direct jaye)</option>
-      <option value="yes">⏱️ 3 Second Timer Auto-Redirect (+ Button)</option>
-      <option value="no">👆 Sirf Button dikhayein (Visitor khud click kare)</option>
-    </select>
-
     <button id="generateBtn" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
-      Generate Base64 URL
+      Generate SEO Instant Link
     </button>
 
     <div id="resultBox" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; word-break: break-all;">
@@ -57,7 +53,7 @@
         📋 Copy Link
       </button>
       <a id="testLink" href="#" target="_blank" style="color: #007bff; font-weight: bold; font-size: 14px; text-decoration: none;">
-        👉 Open & Test Link
+        👉 Test Link
       </a>
     </div>
   </div>
@@ -68,8 +64,8 @@
     const generatorView = document.getElementById("generatorView");
     const errorBox = document.getElementById("errorBox");
     const visitorTitle = document.getElementById("visitorTitle");
-    const visitorSubtext = document.getElementById("visitorSubtext");
     const visitBtn = document.getElementById("visitBtn");
+    const pageTitle = document.getElementById("pageTitle");
 
     try {
       const params = new URLSearchParams(window.location.search);
@@ -94,9 +90,8 @@
           throw new Error("The decoded data is not valid XML.");
         }
 
-        const title = xml.querySelector("title")?.textContent?.trim() || "Welcome";
+        const title = xml.querySelector("title")?.textContent?.trim() || "Redirecting...";
         let destination = xml.querySelector("destination")?.textContent?.trim();
-        const autoRedirect = xml.querySelector("redirect")?.textContent?.trim();
 
         if (!destination) {
           throw new Error("Destination URL is missing in XML.");
@@ -107,31 +102,29 @@
         }
 
         document.title = title;
+        pageTitle.textContent = title;
 
-        if (autoRedirect === "instant") {
-          window.location.replace(destination);
-        } else {
+        // Check if browser is a search engine bot or real user
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(userAgent);
+
+        if (isBot) {
+          // Agar bot hai toh redirect mat karo, taake page index ho jaye
           visitorTitle.textContent = title;
-          visitBtn.href = destination;
           visitorView.style.display = "block";
-
-          if (autoRedirect === "yes") {
-            let seconds = 3;
-            visitorSubtext.textContent = "Redirecting you in " + seconds + " seconds...";
-            const timer = setInterval(() => {
-              seconds--;
-              if (seconds > 0) {
-                visitorSubtext.textContent = "Redirecting you in " + seconds + " seconds...";
-              } else {
-                clearInterval(timer);
-                visitorSubtext.textContent = "Redirecting now...";
-                window.location.replace(destination);
-              }
-            }, 1000);
-          }
+        } else {
+          // Agar real user hai toh foran instant redirect kar do
+          window.location.replace(destination);
+          // Fallback agar redirect block ho jaye
+          setTimeout(() => {
+            visitorTitle.textContent = title;
+            visitBtn.href = destination;
+            visitorView.style.display = "block";
+          }, 500);
         }
+
       } else if (isAdmin === "1") {
-        document.title = "Secret Link Generator";
+        document.title = "SEO Link Generator";
         generatorView.style.display = "block";
       } else {
         document.title = "Welcome";
@@ -155,9 +148,8 @@
     }
 
     document.getElementById("generateBtn").addEventListener("click", () => {
-      const title = document.getElementById("titleInput").value.trim() || "Welcome";
+      const title = document.getElementById("titleInput").value.trim() || "Page";
       let dest = document.getElementById("destInput").value.trim();
-      const mode = document.getElementById("redirectMode").value;
 
       if (!dest) {
         alert("Meharbani farma kar Destination URL likhein!");
@@ -168,7 +160,7 @@
         dest = "https://" + dest;
       }
 
-      const xmlString = `<config><title>${escapeXml(title)}</title><destination>${escapeXml(dest)}</destination><redirect>${mode}</redirect></config>`;
+      const xmlString = `<config><title>${escapeXml(title)}</title><destination>${escapeXml(dest)}</destination></config>`;
 
       const bytes = new TextEncoder().encode(xmlString);
       let binary = "";
