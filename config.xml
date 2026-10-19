@@ -1,0 +1,7 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <title>My First Website</title>
+  <description>My HTML and XML demo website</description>
+  <destination>https://example.com/</destination>
+</config>
