@@ -15,14 +15,18 @@
   <script>
     fetch("https://raw.githubusercontent.com/wwwmuhammadjunaidbhatti-lang/my-website-demo/refs/heads/main/config.xml")
       .then(response => {
-        if (!response.ok) throw new Error("XML file not found");
+        if (!response.ok) {
+          throw new Error("HTTP error: " + response.status);
+        }
         return response.text();
       })
       .then(data => {
         const xml = new DOMParser().parseFromString(data, "application/xml");
+        const parseError = xml.querySelector("parsererror");
 
-        if (xml.querySelector("parsererror")) {
-          throw new Error("Invalid XML");
+        if (parseError) {
+          console.error("XML parsing details:", parseError.textContent);
+          throw new Error("XML parsing failed. Check Console for details.");
         }
 
         const title = xml.querySelector("title");
@@ -30,8 +34,7 @@
           title ? title.textContent : "Configuration loaded.";
       })
       .catch(error => {
-        document.getElementById("message").textContent =
-          "Configuration could not be loaded.";
+        document.getElementById("message").textContent = error.message;
         console.error(error);
       });
   </script>
