@@ -3,55 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Base64 XML Demo</title>
+  <title>Loading...</title>
 </head>
-<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 0 15px;">
-  <h1 id="mainHeading">Base64 XML Demo</h1>
-  <p id="status">Checking URL data...</p>
-  <p id="title" style="font-weight: bold;"></p>
-  <p id="destination" style="font-weight: bold;"></p>
+<body style="font-family: Arial, sans-serif; max-width: 550px; margin: 40px auto; padding: 0 15px; text-align: center;">
 
-  <!-- Destination par jane wala clickable button -->
-  <p id="buttonContainer" style="display: none; margin-top: 15px;">
-    <a id="visitBtn" href="#" style="display: inline-block; padding: 10px 18px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-      Go to Destination
+  <!-- 1. VISITOR VIEW (Sirf tab dikhega jab URL mein ?xml= hoga) -->
+  <div id="visitorView" style="display: none; padding: 30px 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    <h1 id="visitorTitle" style="margin-top: 0; color: #333;">Welcome</h1>
+    <p style="color: #666; margin-bottom: 25px;">Click the button below to continue to your destination.</p>
+    <a id="visitBtn" href="#" style="display: inline-block; padding: 12px 28px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+      Continue to Website →
     </a>
-  </p>
+  </div>
 
-  <hr style="margin: 25px 0;">
+  <!-- ERROR MESSAGE (Agar XML galat ho) -->
+  <p id="errorBox" style="display: none; color: red; font-weight: bold;"></p>
 
-  <h2>Create Your Own Base64 XML URL</h2>
-  <p>Neeche box mein apna Title aur Destination change karein aur button dabayein:</p>
+  <!-- 2. ADMIN / GENERATOR VIEW (Sirf tab dikhega jab normal website khulegi) -->
+  <div id="generatorView" style="display: none; text-align: left;">
+    <h1>Base64 XML Link Generator</h1>
+    <p>Neeche box mein apna <strong>Title</strong> aur <strong>Destination</strong> likhein aur button dabayein:</p>
 
-  <textarea id="xmlInput" rows="6" style="width: 100%; font-family: monospace; padding: 8px;"><config>
+    <textarea id="xmlInput" rows="6" style="width: 100%; font-family: monospace; padding: 10px; box-sizing: border-box;"><config>
   <title>My New Website</title>
   <destination>https://www.wikipedia.org/</destination>
 </config></textarea>
 
-  <br><br>
-  <button id="generateBtn" style="padding: 10px 15px; cursor: pointer;">Generate Base64 URL</button>
+    <br><br>
+    <button id="generateBtn" style="padding: 10px 18px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+      Generate Base64 URL
+    </button>
 
-  <div id="resultBox" style="display: none; margin-top: 20px; padding: 10px; background: #f4f4f4; word-break: break-all;">
-    <p><strong>Aapka Ready URL:</strong></p>
-    <p id="generatedUrl"></p>
-    <p><a id="testLink" href="#">👉 Click here to test this URL</a></p>
+    <div id="resultBox" style="display: none; margin-top: 20px; padding: 15px; background: #f4f4f4; border-radius: 6px; word-break: break-all;">
+      <p style="margin-top: 0;"><strong>Aapka Ready URL:</strong></p>
+      <p id="generatedUrl" style="font-family: monospace; font-size: 13px;"></p>
+      <p style="margin-bottom: 0;">
+        <a id="testLink" href="#" target="_blank" style="color: #007bff; font-weight: bold;">
+          👉 Click here to test this URL (Opens in new tab)
+        </a>
+      </p>
+    </div>
   </div>
 
   <script>
-    const status = document.getElementById("status");
-    const titleOutput = document.getElementById("title");
-    const destinationOutput = document.getElementById("destination");
-    const buttonContainer = document.getElementById("buttonContainer");
+    const visitorView = document.getElementById("visitorView");
+    const generatorView = document.getElementById("generatorView");
+    const errorBox = document.getElementById("errorBox");
+    const visitorTitle = document.getElementById("visitorTitle");
     const visitBtn = document.getElementById("visitBtn");
 
-    // 1. URL se Base64 XML read karne wala hissa
     try {
       const params = new URLSearchParams(window.location.search);
       const encoded = params.get("xml");
 
       if (!encoded) {
-        status.textContent = "No Base64 XML found in URL. You can create one below!";
+        // Agar URL mein ?xml= nahi hai, toh Generator dikhao
+        document.title = "XML Link Generator";
+        generatorView.style.display = "block";
       } else {
+        // Agar URL mein ?xml= hai, toh decode karke Visitor Page dikhao
         const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
         const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
         const decoded = atob(padded);
@@ -69,27 +79,24 @@
           throw new Error("The decoded data is not valid XML.");
         }
 
-        const title = xml.querySelector("title")?.textContent?.trim();
+        const title = xml.querySelector("title")?.textContent?.trim() || "Welcome";
         const destination = xml.querySelector("destination")?.textContent?.trim();
 
-        status.textContent = "Base64 XML loaded successfully!";
-        titleOutput.textContent = "Title: " + (title || "Not provided");
-        destinationOutput.textContent = "Destination: " + (destination || "Not provided");
-
-        if (title) {
-          document.title = title;
+        if (!destination) {
+          throw new Error("Destination URL is missing in XML.");
         }
 
-        if (destination) {
-          visitBtn.href = destination;
-          buttonContainer.style.display = "block";
-        }
+        document.title = title;
+        visitorTitle.textContent = title;
+        visitBtn.href = destination;
+        visitorView.style.display = "block";
       }
     } catch (error) {
-      status.textContent = "Error: " + error.message;
+      errorBox.textContent = "Error: " + error.message;
+      errorBox.style.display = "block";
     }
 
-    // 2. XML ko Base64 URL mein convert karne wala hissa
+    // Generator Button ka kaam
     document.getElementById("generateBtn").addEventListener("click", () => {
       const xmlText = document.getElementById("xmlInput").value.trim();
       const bytes = new TextEncoder().encode(xmlText);
