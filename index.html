@@ -6,10 +6,17 @@
   <title>Base64 XML Demo</title>
 </head>
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 0 15px;">
-  <h1>Base64 XML Demo</h1>
+  <h1 id="mainHeading">Base64 XML Demo</h1>
   <p id="status">Checking URL data...</p>
   <p id="title" style="font-weight: bold;"></p>
   <p id="destination" style="font-weight: bold;"></p>
+
+  <!-- Destination par jane wala clickable button -->
+  <p id="buttonContainer" style="display: none; margin-top: 15px;">
+    <a id="visitBtn" href="#" style="display: inline-block; padding: 10px 18px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+      Go to Destination
+    </a>
+  </p>
 
   <hr style="margin: 25px 0;">
 
@@ -34,6 +41,8 @@
     const status = document.getElementById("status");
     const titleOutput = document.getElementById("title");
     const destinationOutput = document.getElementById("destination");
+    const buttonContainer = document.getElementById("buttonContainer");
+    const visitBtn = document.getElementById("visitBtn");
 
     // 1. URL se Base64 XML read karne wala hissa
     try {
@@ -60,12 +69,21 @@
           throw new Error("The decoded data is not valid XML.");
         }
 
-        const title = xml.querySelector("title")?.textContent;
-        const destination = xml.querySelector("destination")?.textContent;
+        const title = xml.querySelector("title")?.textContent?.trim();
+        const destination = xml.querySelector("destination")?.textContent?.trim();
 
         status.textContent = "Base64 XML loaded successfully!";
         titleOutput.textContent = "Title: " + (title || "Not provided");
         destinationOutput.textContent = "Destination: " + (destination || "Not provided");
+
+        if (title) {
+          document.title = title;
+        }
+
+        if (destination) {
+          visitBtn.href = destination;
+          buttonContainer.style.display = "block";
+        }
       }
     } catch (error) {
       status.textContent = "Error: " + error.message;
