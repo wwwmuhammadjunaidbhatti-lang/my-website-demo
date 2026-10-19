@@ -3,5 +3,5 @@
 <config>
   <title>My First Website</title>
   <description>My HTML and XML demo website</description>
-  <destination>https://media1.nightflix.video/</destination>
+  <destination>https://example.com/</destination>
 </config>
