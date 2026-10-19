@@ -4,48 +4,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Website Demo</title>
-  <meta name="description" content="My first HTML website demo.">
+  <title>Base64 XML Demo</title>
 </head>
 <body>
-  <h1>My Website Demo</h1>
-  <p>Website successfully uploaded.</p>
-  <p id="message">Loading configuration...</p>
+  <h1>Base64 XML Demo</h1>
+  <p id="status">Checking URL data...</p>
+  <p id="title"></p>
+  <p id="destination"></p>
 
   <script>
-    fetch("https://raw.githubusercontent.com/wwwmuhammadjunaidbhatti-lang/my-website-demo/refs/heads/main/config.xml")
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("HTTP error: " + response.status);
-        }
-        return response.text();
-      })
-      .then(data => {
-        const cleanedData = data
-          .replace(/^\uFEFF/, "")
-          .replace(/^\s*<\?xml[^?]*\?>/i, "");
+    const status = document.getElementById("status");
+    const titleOutput = document.getElementById("title");
+    const destinationOutput = document.getElementById("destination");
 
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const encoded = params.get("xml");
+
+      if (!encoded) {
+        status.textContent = "No Base64 XML found in URL.";
+      } else {
+        const decoded = atob(encoded);
         const xml = new DOMParser().parseFromString(
-          cleanedData,
+          decoded,
           "application/xml"
         );
 
-        const parseError = xml.querySelector("parsererror");
-
-        if (parseError) {
-          console.error("XML parsing details:", parseError.textContent);
-          throw new Error("XML parsing failed. Check Console for details.");
+        if (xml.querySelector("parsererror")) {
+          throw new Error("The decoded data is not valid XML.");
         }
 
-        const title = xml.querySelector("title");
+        const title = xml.querySelector("title")?.textContent;
+        const destination =
+          xml.querySelector("destination")?.textContent;
 
-        document.getElementById("message").textContent =
-          title ? title.textContent : "Configuration loaded.";
-      })
-      .catch(error => {
-        document.getElementById("message").textContent = error.message;
-        console.error(error);
-      });
+        status.textContent = "Base64 XML loaded successfully!";
+        titleOutput.textContent = "Title: " + (title || "Not provided");
+        destinationOutput.textContent =
+          "Destination: " + (destination || "Not provided");
+      }
+    } catch (error) {
+      status.textContent = "Error: " + error.message;
+    }
   </script>
 </body>
 </html>
