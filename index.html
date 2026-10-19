@@ -21,7 +21,15 @@
         return response.text();
       })
       .then(data => {
-        const xml = new DOMParser().parseFromString(data, "application/xml");
+        const cleanedData = data
+          .replace(/^\uFEFF/, "")
+          .replace(/^\s*<\?xml[^?]*\?>/i, "");
+
+        const xml = new DOMParser().parseFromString(
+          cleanedData,
+          "application/xml"
+        );
+
         const parseError = xml.querySelector("parsererror");
 
         if (parseError) {
@@ -30,6 +38,7 @@
         }
 
         const title = xml.querySelector("title");
+
         document.getElementById("message").textContent =
           title ? title.textContent : "Configuration loaded.";
       })
