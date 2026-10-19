@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,23 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Base64 XML Demo</title>
 </head>
-<body>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 30px auto; padding: 0 15px;">
   <h1>Base64 XML Demo</h1>
   <p id="status">Checking URL data...</p>
-  <p id="title"></p>
-  <p id="destination"></p>
+  <p id="title" style="font-weight: bold;"></p>
+  <p id="destination" style="font-weight: bold;"></p>
+
+  <hr style="margin: 25px 0;">
+
+  <h2>Create Your Own Base64 XML URL</h2>
+  <p>Neeche box mein apna Title aur Destination change karein aur button dabayein:</p>
+
+  <textarea id="xmlInput" rows="6" style="width: 100%; font-family: monospace; padding: 8px;"><config>
+  <title>My New Website</title>
+  <destination>https://www.wikipedia.org/</destination>
+</config></textarea>
+
+  <br><br>
+  <button id="generateBtn" style="padding: 10px 15px; cursor: pointer;">Generate Base64 URL</button>
+
+  <div id="resultBox" style="display: none; margin-top: 20px; padding: 10px; background: #f4f4f4; word-break: break-all;">
+    <p><strong>Aapka Ready URL:</strong></p>
+    <p id="generatedUrl"></p>
+    <p><a id="testLink" href="#">👉 Click here to test this URL</a></p>
+  </div>
 
   <script>
     const status = document.getElementById("status");
     const titleOutput = document.getElementById("title");
     const destinationOutput = document.getElementById("destination");
 
+    // 1. URL se Base64 XML read karne wala hissa
     try {
       const params = new URLSearchParams(window.location.search);
       const encoded = params.get("xml");
 
       if (!encoded) {
-        status.textContent = "No Base64 XML found in URL.";
+        status.textContent = "No Base64 XML found in URL. You can create one below!";
       } else {
         const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
         const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
@@ -31,27 +50,45 @@
         const bytes = Uint8Array.from(decoded, c => c.charCodeAt(0));
         const xmlText = new TextDecoder().decode(bytes);
 
-        const xml = new DOMParser().parseFromString(
-          xmlText,
-          "application/xml"
-        );
+        const cleanedXml = xmlText
+          .replace(/^\uFEFF/, "")
+          .replace(/^\s*<\?xml[^?]*\?>/i, "");
+
+        const xml = new DOMParser().parseFromString(cleanedXml, "application/xml");
 
         if (xml.querySelector("parsererror")) {
           throw new Error("The decoded data is not valid XML.");
         }
 
         const title = xml.querySelector("title")?.textContent;
-        const destination =
-          xml.querySelector("destination")?.textContent;
+        const destination = xml.querySelector("destination")?.textContent;
 
         status.textContent = "Base64 XML loaded successfully!";
         titleOutput.textContent = "Title: " + (title || "Not provided");
-        destinationOutput.textContent =
-          "Destination: " + (destination || "Not provided");
+        destinationOutput.textContent = "Destination: " + (destination || "Not provided");
       }
     } catch (error) {
       status.textContent = "Error: " + error.message;
     }
+
+    // 2. XML ko Base64 URL mein convert karne wala hissa
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      const xmlText = document.getElementById("xmlInput").value.trim();
+      const bytes = new TextEncoder().encode(xmlText);
+      let binary = "";
+      bytes.forEach(b => binary += String.fromCharCode(b));
+
+      const base64Url = btoa(binary)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+
+      const fullUrl = window.location.origin + window.location.pathname + "?xml=" + base64Url;
+
+      document.getElementById("generatedUrl").textContent = fullUrl;
+      document.getElementById("testLink").href = fullUrl;
+      document.getElementById("resultBox").style.display = "block";
+    });
   </script>
 </body>
 </html>
