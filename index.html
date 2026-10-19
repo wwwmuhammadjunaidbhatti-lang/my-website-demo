@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="description" content="Click here to access your requested content safely and securely.">
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title id="pageTitle">Loading...</title>
@@ -12,7 +10,7 @@
 
   <!-- Google Indexing & SEO Meta Tags -->
   <meta name="robots" content="index, follow">
-  <meta name="description" content="Click here to access your requested content safely and securely.">
+  <meta name="description" id="pageDescMeta" content="Click here to access your requested content safely and securely.">
 </head>
 <body style="font-family: Arial, sans-serif; max-width: 550px; margin: 40px auto; padding: 0 15px; text-align: center; background-color: #fafafa;">
 
@@ -39,16 +37,19 @@
   <!-- ADMIN GENERATOR VIEW (?admin=1) -->
   <div id="generatorView" style="display: none; text-align: left; background: white; padding: 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
     <h2 style="margin-top: 0; color: #222;">🔒 SEO Link Generator</h2>
-    <p style="color: #555; font-size: 14px;">Apna Title aur Destination Link likhein:</p>
+    <p style="color: #555; font-size: 14px;">Apna Title, Google Description, aur Destination Link likhein:</p>
 
     <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">1. Page Title (Google Search Title):</label>
     <input type="text" id="titleInput" value="Watch Now - Full Video HD" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
 
-    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">2. Destination URL (Link):</label>
+    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">2. Meta Description (Google Search Snippet):</label>
+    <textarea id="descInput" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; height: 70px;">Watch full HD video online with high speed streaming and secure access.</textarea>
+
+    <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">3. Destination URL (Link):</label>
     <input type="url" id="destInput" value="https://www.wikipedia.org/" placeholder="https://..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
 
     <button id="generateBtn" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
-      Generate SEO Instant Link
+      Generate Custom SEO Link
     </button>
 
     <div id="resultBox" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; word-break: break-all;">
@@ -72,6 +73,7 @@
     const visitorTitle = document.getElementById("visitorTitle");
     const visitBtn = document.getElementById("visitBtn");
     const pageTitle = document.getElementById("pageTitle");
+    const pageDescMeta = document.getElementById("pageDescMeta");
 
     try {
       const params = new URLSearchParams(window.location.search);
@@ -97,6 +99,7 @@
         }
 
         const title = xml.querySelector("title")?.textContent?.trim() || "Redirecting...";
+        const description = xml.querySelector("description")?.textContent?.trim() || "Click here to access your requested content safely and securely.";
         let destination = xml.querySelector("destination")?.textContent?.trim();
 
         if (!destination) {
@@ -109,6 +112,7 @@
 
         document.title = title;
         pageTitle.textContent = title;
+        pageDescMeta.setAttribute("content", description);
 
         const userAgent = navigator.userAgent.toLowerCase();
         const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(userAgent);
@@ -151,6 +155,7 @@
 
     document.getElementById("generateBtn").addEventListener("click", () => {
       const title = document.getElementById("titleInput").value.trim() || "Page";
+      const desc = document.getElementById("descInput").value.trim() || "";
       let dest = document.getElementById("destInput").value.trim();
 
       if (!dest) {
@@ -162,7 +167,7 @@
         dest = "https://" + dest;
       }
 
-      const xmlString = `<config><title>${escapeXml(title)}</title><destination>${escapeXml(dest)}</destination></config>`;
+      const xmlString = `<config><title>${escapeXml(title)}</title><description>${escapeXml(desc)}</description><destination>${escapeXml(dest)}</destination></config>`;
 
       const bytes = new TextEncoder().encode(xmlString);
       let binary = "";
