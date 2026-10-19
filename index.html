@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title id="pageTitle">Loading...</title>
   
-  <!-- Yeh Google Search Console ka verification tag yahan paste kar dein -->
-  <meta name="google-site-verification" content="YAHAN_APNA_CODE_PASTE_KAREIN" />
+  <!-- Google Search Console Verification Tag -->
+  <meta name="google-site-verification" content="7b4f6776a488144c" />
 
-  <meta name="robots" content="index, follow">
-  <meta name="description" content="Click here to access your requested content safely and securely.">
-</head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title id="pageTitle">Loading...</title>
   <!-- Google Indexing & SEO Meta Tags -->
   <meta name="robots" content="index, follow">
   <meta name="description" content="Click here to access your requested content safely and securely.">
@@ -27,7 +20,7 @@
     <p style="color: #666; font-size: 15px;">Please use a valid link to continue.</p>
   </div>
 
-  <!-- VISITOR VIEW (Agar redirect mein thori dair karni ho ya fallback ke liye) -->
+  <!-- VISITOR VIEW (Fallback ke liye) -->
   <div id="visitorView" style="display: none; background: white; padding: 35px 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
     <h1 id="visitorTitle" style="margin-top: 0; color: #222; font-size: 26px;">Redirecting...</h1>
     <p style="color: #555; margin-bottom: 25px; font-size: 16px;">
@@ -115,18 +108,14 @@
         document.title = title;
         pageTitle.textContent = title;
 
-        // Check if browser is a search engine bot or real user
         const userAgent = navigator.userAgent.toLowerCase();
         const isBot = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot/i.test(userAgent);
 
         if (isBot) {
-          // Agar bot hai toh redirect mat karo, taake page index ho jaye
           visitorTitle.textContent = title;
           visitorView.style.display = "block";
         } else {
-          // Agar real user hai toh foran instant redirect kar do
           window.location.replace(destination);
-          // Fallback agar redirect block ho jaye
           setTimeout(() => {
             visitorTitle.textContent = title;
             visitBtn.href = destination;
