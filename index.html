@@ -24,9 +24,15 @@
       if (!encoded) {
         status.textContent = "No Base64 XML found in URL.";
       } else {
-        const decoded = atob(encoded);
+        const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
+        const decoded = atob(padded);
+
+        const bytes = Uint8Array.from(decoded, c => c.charCodeAt(0));
+        const xmlText = new TextDecoder().decode(bytes);
+
         const xml = new DOMParser().parseFromString(
-          decoded,
+          xmlText,
           "application/xml"
         );
 
