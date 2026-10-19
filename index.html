@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loading...</title>
+  <title>Welcome</title>
 </head>
 <body style="font-family: Arial, sans-serif; max-width: 550px; margin: 40px auto; padding: 0 15px; text-align: center; background-color: #fafafa;">
+
+  <!-- 0. NORMAL HOME VIEW (Jab koi bina ?xml= ya ?admin=1 ke main website kholega) -->
+  <div id="homeView" style="display: none; background: white; padding: 40px 25px; border: 1px solid #e0e0e0; border-radius: 12px;">
+    <h2 style="margin-top: 0; color: #333;">Welcome to My Website</h2>
+    <p style="color: #666; font-size: 15px;">Please use a valid link to continue to your destination.</p>
+  </div>
 
   <!-- 1. VISITOR VIEW (Jab koi ?xml= wala link kholega) -->
   <div id="visitorView" style="display: none; background: white; padding: 35px 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
@@ -13,7 +19,7 @@
     <p id="visitorSubtext" style="color: #555; margin-bottom: 25px; font-size: 16px;">
       Click the button below to continue to your destination.
     </p>
-    <a id="visitBtn" href="#" style="display: inline-block; padding: 13px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+    <a id="visitBtn" href="#" rel="noreferrer" style="display: inline-block; padding: 13px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
       Continue to Website →
     </a>
   </div>
@@ -21,21 +27,22 @@
   <!-- ERROR MESSAGE -->
   <p id="errorBox" style="display: none; color: #d9534f; background: #fdf2f2; padding: 15px; border-radius: 8px; font-weight: bold;"></p>
 
-  <!-- 2. ADMIN / GENERATOR VIEW (Jab aap normal website kholenge) -->
+  <!-- 2. SECRET ADMIN GENERATOR VIEW (Sirf ?admin=1 par khulega) -->
   <div id="generatorView" style="display: none; text-align: left; background: white; padding: 25px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-    <h2 style="margin-top: 0; color: #222;">Base64 XML Link Generator</h2>
+    <h2 style="margin-top: 0; color: #222;">🔒 Secret Link Generator</h2>
     <p style="color: #555; font-size: 14px;">Apna Title aur Destination Link neeche likhein:</p>
 
     <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">1. Page Title:</label>
-    <input type="text" id="titleInput" value="My New Website" placeholder="Maslan: My Awesome Page" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+    <input type="text" id="titleInput" value="Please Wait..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
 
     <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">2. Destination URL (Link):</label>
     <input type="url" id="destInput" value="https://www.wikipedia.org/" placeholder="https://..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
 
     <label style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px;">3. Redirect Style:</label>
     <select id="redirectMode" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; background: white;">
-      <option value="no">Sirf Button dikhayein (Visitor khud click kare)</option>
-      <option value="yes">3 Second mein Auto-Redirect karein (+ Button)</option>
+      <option value="instant">⚡ Instant Redirect (Bina ruke direct jaye)</option>
+      <option value="yes">⏱️ 3 Second Timer Auto-Redirect (+ Button)</option>
+      <option value="no">👆 Sirf Button dikhayein (Visitor khud click kare)</option>
     </select>
 
     <button id="generateBtn" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">
@@ -56,6 +63,7 @@
   </div>
 
   <script>
+    const homeView = document.getElementById("homeView");
     const visitorView = document.getElementById("visitorView");
     const generatorView = document.getElementById("generatorView");
     const errorBox = document.getElementById("errorBox");
@@ -66,11 +74,9 @@
     try {
       const params = new URLSearchParams(window.location.search);
       const encoded = params.get("xml");
+      const isAdmin = params.get("admin");
 
-      if (!encoded) {
-        document.title = "XML Link Generator";
-        generatorView.style.display = "block";
-      } else {
+      if (encoded) {
         const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
         const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
         const decoded = atob(padded);
@@ -101,24 +107,35 @@
         }
 
         document.title = title;
-        visitorTitle.textContent = title;
-        visitBtn.href = destination;
-        visitorView.style.display = "block";
 
-        if (autoRedirect === "yes") {
-          let seconds = 3;
-          visitorSubtext.textContent = "Redirecting you in " + seconds + " seconds...";
-          const timer = setInterval(() => {
-            seconds--;
-            if (seconds > 0) {
-              visitorSubtext.textContent = "Redirecting you in " + seconds + " seconds...";
-            } else {
-              clearInterval(timer);
-              visitorSubtext.textContent = "Redirecting now...";
-              window.location.href = destination;
-            }
-          }, 1000);
+        if (autoRedirect === "instant") {
+          window.location.replace(destination);
+        } else {
+          visitorTitle.textContent = title;
+          visitBtn.href = destination;
+          visitorView.style.display = "block";
+
+          if (autoRedirect === "yes") {
+            let seconds = 3;
+            visitorSubtext.textContent = "Redirecting you in " + seconds + " seconds...";
+            const timer = setInterval(() => {
+              seconds--;
+              if (seconds > 0) {
+                visitorSubtext.textContent = "Redirecting you in " + seconds + " seconds...";
+              } else {
+                clearInterval(timer);
+                visitorSubtext.textContent = "Redirecting now...";
+                window.location.replace(destination);
+              }
+            }, 1000);
+          }
         }
+      } else if (isAdmin === "1") {
+        document.title = "Secret Link Generator";
+        generatorView.style.display = "block";
+      } else {
+        document.title = "Welcome";
+        homeView.style.display = "block";
       }
     } catch (error) {
       errorBox.textContent = "Error: " + error.message;
