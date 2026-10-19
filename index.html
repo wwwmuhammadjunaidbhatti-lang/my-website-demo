@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Website Demo</title>
+  <meta name="description" content="My first HTML website demo.">
+</head>
+<body>
+  <h1>My Website Demo</h1>
+  <p>Website successfully uploaded.</p>
+  <p id="message">Loading configuration...</p>
+
+  <script>
+    fetch("./config.xml")
+      .then(response => {
+        if (!response.ok) throw new Error("XML file not found");
+        return response.text();
+      })
+      .then(data => {
+        const xml = new DOMParser().parseFromString(
+          data, "application/xml"
+        );
+
+        if (xml.querySelector("parsererror")) {
+          throw new Error("Invalid XML");
+        }
+
+        const title = xml.querySelector("title");
+        document.getElementById("message").textContent =
+          title ? title.textContent : "Configuration loaded.";
+      })
+      .catch(() => {
+        document.getElementById("message").textContent =
+          "Please check config.xml";
+      });
+  </script>
+</body>
+</html>
